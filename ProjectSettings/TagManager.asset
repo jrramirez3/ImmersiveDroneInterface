@@ -3,29 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - ExcludeTeleport
-  - Cubes
-  - Spheres
-  - Saucers
-  - OtherSaucers
-  - Torso
-  - Arm
-  - Leg
-  - DroneMenu
-  - Ground
-  - waypoint
-  - World
-  - Drone
-  - Line Collider
-  - Floor
-  - Handle
-  - ROSDrone
-  - Table
-  - Cart
-  - WaypointPlacement
-  - selectionZone
-  - drone1
+  tags: []
   layers:
   - Default
   - TransparentFX
