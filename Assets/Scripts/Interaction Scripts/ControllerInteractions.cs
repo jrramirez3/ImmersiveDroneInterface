@@ -10,6 +10,10 @@
     using VRTK;
     using ROSBridgeLib.interface_msgs;
 
+    //using UnityEngine;
+    using HTC.UnityPlugin.Vive;
+    using HTC.UnityPlugin.VRModuleManagement;
+
     // THis class handles all controller interactions with the waypoints and drone
 
     public class ControllerInteractions : MonoBehaviour
@@ -39,6 +43,8 @@
         public Material heightSelectionPlaneMaterial;
 
         public static Waypoint currentWayPointZone;
+
+        private uint m_deviceIndex;
 
         /// <summary>
         /// The start method initializes all necessary variables and creates the selection zone (grabZone) and the place point
@@ -99,6 +105,50 @@
         /// </summary>
         void Update()
         {
+            float X = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.PadX);
+            float Y = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.PadY);
+
+            Debug.Log("X" + X);
+            Debug.Log("Y" + Y);
+
+
+            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.FullTrigger))
+            {
+                Debug.Log("Full Trigger PRESSED");
+            }
+
+            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Menu))
+            {
+                Debug.Log("Menu PRESSED");
+            }
+
+            //Debug.Log(IsPointerActive());
+            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger))
+            {
+                Debug.Log("Trigger PRESSED");
+            }
+
+            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip))
+            {
+                Debug.Log("Grip PRESSED");
+            }
+
+
+            var deviceIndex = ViveRole.GetDeviceIndexEx(HandRole.RightHand);
+            var deviceState = VRModule.GetDeviceState(deviceIndex);
+            Debug.Log("velocity" + deviceState.velocity);
+            Debug.Log("angularVelocity = " + deviceState.angularVelocity);
+            Debug.Log("position = " + deviceState.position);
+            Debug.Log("rotation = " + deviceState.rotation);
+
+            var deviceIndexLeft = ViveRole.GetDeviceIndexEx(HandRole.LeftHand);
+            var deviceStateLeft = VRModule.GetDeviceState(deviceIndexLeft);
+            Debug.Log("Left velocity " + deviceStateLeft.velocity);
+            Debug.Log("Left angular velocity " + deviceStateLeft.angularVelocity);
+            Debug.Log("Left position = " + deviceStateLeft.position);
+            Debug.Log("Left rotation = " + deviceStateLeft.rotation);
+
+
             // SELECTION POINTER  
             SelectionPointerChecks();
 
@@ -108,7 +158,8 @@
                 GrabbingChecks();
 
                 // UNDO AND DELETE (B - BUTTON)
-                if (OVRInput.GetDown(OVRInput.Button.Two))
+                //if (OVRInput.GetDown(OVRInput.Button.Two))
+                if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Menu))
                 {
                     UndoAndDeleteWaypoints();
                 }
@@ -238,7 +289,8 @@
         /// </summary>
         private void ScalingChecks()
         {
-            if (OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger))
+            //if (OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger))
+            if ((ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Grip)) && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)))
             {
                 currentControllerState = ControllerState.SCALING;
             }
@@ -255,17 +307,21 @@
         private void SelectionPointerChecks()
         {
             if (currentControllerState == ControllerState.IDLE
-                && OVRInput.GetDown(OVRInput.Button.SecondaryHandTrigger)
-                && !OVRInput.Get(OVRInput.Button.PrimaryHandTrigger))
+                 //&& OVRInput.GetDown(OVRInput.Button.SecondaryHandTrigger)
+                 && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger))
+                //&& !OVRInput.Get(OVRInput.Button.PrimaryHandTrigger))
+                && !(ViveInput.GetPress(HandRole.RightHand, ControllerButton.Trigger)))
             {
                 toggleRaycastOn();
                 currentControllerState = ControllerState.POINTING; // Switch to the controller's pointing state
             }
 
             if ((currentControllerState == ControllerState.POINTING             // Checking for releasing grip
-                && OVRInput.GetUp(OVRInput.Button.SecondaryHandTrigger)) ||
+                //&& OVRInput.GetUp(OVRInput.Button.SecondaryHandTrigger)) ||
+                && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)) ) ||
                 (currentControllerState == ControllerState.POINTING             // Checking for scaling interaction
-                && OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger)))
+                //&& OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger)))
+                && (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Grip))) )
             {
                 toggleRaycastOff();
                 currentControllerState = ControllerState.IDLE; // Switch to the controller's idle state
@@ -303,7 +359,8 @@
         {
             // Checks for right index Pressed and no waypoint in collision
             if (currentControllerState == ControllerState.IDLE &&
-                OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger) &&
+                //OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger) &&
+                (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)) &&
                 mostRecentCollision.type != CollisionType.WAYPOINT)
 
             {
@@ -325,6 +382,7 @@
 
             // Releases the waypoint when the right index is released
             if (currentControllerState == ControllerState.PLACING_WAYPOINT && OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger))
+            if (currentControllerState == ControllerState.PLACING_WAYPOINT && (ViveInput.GetPressUp(HandRole.RightHand, ControllerButton.Trigger)))
             {
                 UserpointInstruction msg = new UserpointInstruction(currentWaypoint, "MODIFY");
                 WorldProperties.worldObject.GetComponent<ROSDroneConnection>().PublishWaypointUpdateMessage(msg);
@@ -338,19 +396,22 @@
         private void SecondaryPlacementChecks()
         {
             // Ending the height adjustment
-            if (currentControllerState == ControllerState.SETTING_HEIGHT && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+            //if (currentControllerState == ControllerState.SETTING_HEIGHT && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+            if (currentControllerState == ControllerState.SETTING_HEIGHT && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)))
             {
                 toggleHeightPlaneOff();
                 currentControllerState = ControllerState.POINTING;
 
-                if (!OVRInput.Get(OVRInput.RawButton.RHandTrigger))
+                //if (!OVRInput.Get(OVRInput.RawButton.RHandTrigger))
+                if (!ViveInput.GetPress(HandRole.RightHand, ControllerButton.Trigger))
                 {
                     toggleRaycastOff();
                     currentControllerState = ControllerState.IDLE;
                 }
             }
             // Initializing groundPoint when pointing and pressing index trigger
-            else if (currentControllerState == ControllerState.POINTING && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+            //else if (currentControllerState == ControllerState.POINTING && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
+            else if (currentControllerState == ControllerState.POINTING && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Menu)))
             {
                 if (controller.GetComponent<VRTK_Pointer>().IsStateValid() &&
                     controller.GetComponent<VRTK_StraightPointerRenderer>().GetDestinationHit().point.y < WorldProperties.placementPlane.transform.position.y + 0.1)

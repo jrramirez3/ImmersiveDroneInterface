@@ -4,6 +4,8 @@
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEditor;
+    using HTC.UnityPlugin.Vive;
+    using HTC.UnityPlugin.VRModuleManagement;
 
     public class MapInteractions : MonoBehaviour
     {
@@ -45,7 +47,7 @@
         public LinkedList<float> angles;
         public bool handleHeldTrigger = false;
         public static MapState mapState;
-        public OVRInput.Controller currentController;
+        //public OVRInput.Controller currentController;
         private Vector3 oldVec;
         private float movementAngle;
         public float movementAngleDecay = .95f;
@@ -53,6 +55,12 @@
         // Pointer Controller
         private GameObject controller;
         private VRTK.VRTK_StraightPointerRenderer pointer;
+
+        //Controller Positions
+        private Vector3 RightControllerPosition;
+        private Vector3 LeftControllerPosition;
+        private Vector3 RightControllerVelocity;
+        private Vector3 LeftControllerVelocity;
 
         // Use this for initialization
         void Start()
@@ -84,7 +92,8 @@
         void FixedUpdate()
         {
 
-            if (OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger))
+            //if (OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger))
+            if (((ViveInput.GetPress(HandRole.LeftHand, ControllerButton.Grip))) && ((ViveInput.GetPress(HandRole.RightHand, ControllerButton.Grip))))
             {
                 // SCALE WORLD - if both grip triggers are held
                 ScaleWorld();
@@ -107,7 +116,8 @@
         // Rotate the world based off of the right thumbstick
         private void ControllerRotateWorld()
         {
-            float deltaX = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;
+            //float deltaX = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).x;
+            float deltaX = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.PadX);
 
             // We only consider inputs above a certain threshold.
             if (Mathf.Abs(deltaX) > 0.2f)
@@ -138,7 +148,8 @@
                 mapState = MapState.DRAGGING;
 
                 // Initialize oldVec: direction vec from hand to pivot.
-                oldVec = OVRInput.GetLocalControllerPosition(currentController) - pivot.transform.position;
+                //oldVec = OVRInput.GetLocalControllerPosition(currentController) - pivot.transform.position;
+                oldVec = RightControllerPosition - pivot.transform.position;
                 oldVec.y = 0;
                 oldVec = Vector3.Normalize(oldVec);
 
@@ -150,7 +161,8 @@
             if (mapState == MapState.DRAGGING)
             {
                 // CASE: User has released the handle.
-                if (OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger, currentController) < .1f)
+                //if (OVRInput.Get(OVRInput.Axis1D.PrimaryHandTrigger, currentController) < .1f)
+                if (ViveInput.GetPressUp(HandRole.LeftHand, ControllerButton.FullTrigger))
                 {
                     // CASE: User was dragging the table when they released the handle.
                     if (mapState == MapState.DRAGGING)
@@ -167,7 +179,8 @@
                 }
 
                 // Initialize currVec.
-                Vector3 currVec = OVRInput.GetLocalControllerPosition(currentController) - pivot.transform.position;
+                //Vector3 currVec = OVRInput.GetLocalControllerPosition(currentController) - pivot.transform.position;
+                Vector3 currVec = RightControllerPosition - pivot.transform.position;
                 currVec.y = 0;
                 currVec = Vector3.Normalize(currVec);
 
@@ -208,9 +221,11 @@
 
         private void MoveWorld()
         {
-            float moveX = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).x;
-            float moveZ = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y;
-            
+            //float moveX = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).x;
+            //float moveZ = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y;
+            float moveX = ViveInput.GetAxis(HandRole.LeftHand, ControllerAxis.PadX);
+            float moveZ = ViveInput.GetAxis(HandRole.LeftHand, ControllerAxis.PadY);
+
             if (moveX != 0 || moveZ != 0)
             {
                 // update map position based on input
@@ -232,8 +247,11 @@
         private void ScaleWorld()
         {
             //Obtaining distance and velocity
-            Vector3 d = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch) - OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
-            Vector3 v = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.LTouch) - OVRInput.GetLocalControllerVelocity(OVRInput.Controller.RTouch);
+            //Vector3 d = OVRInput.GetLocalControllerPosition(OVRInput.Controller.LTouch) - OVRInput.GetLocalControllerPosition(OVRInput.Controller.RTouch);
+            //Vector3 v = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.LTouch) - OVRInput.GetLocalControllerVelocity(OVRInput.Controller.RTouch);
+
+            Vector3 d = LeftControllerPosition - RightControllerPosition;
+            Vector3 v = LeftControllerVelocity - RightControllerVelocity;
 
             //Calculating Scaling Vector
             float result = Vector3.Dot(v, d);

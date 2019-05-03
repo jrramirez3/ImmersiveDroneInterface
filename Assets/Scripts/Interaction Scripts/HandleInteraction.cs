@@ -19,7 +19,7 @@
         private void OnUsed(object sender, InteractableObjectEventArgs e)
         {
             controllerInteractions.handleHeldTrigger = true;
-            controllerInteractions.currentController = e.interactingObject.name.Equals("RightController") ? OVRInput.Controller.RTouch : OVRInput.Controller.LTouch;
+            //controllerInteractions.currentController = e.interactingObject.name.Equals("RightController") ? OVRInput.Controller.RTouch : OVRInput.Controller.LTouch;
         }
     }
 
