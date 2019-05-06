@@ -105,49 +105,6 @@
         /// </summary>
         void Update()
         {
-            float X = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.PadX);
-            float Y = ViveInput.GetAxis(HandRole.RightHand, ControllerAxis.PadY);
-
-            Debug.Log("X" + X);
-            Debug.Log("Y" + Y);
-
-
-            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.FullTrigger))
-            {
-                Debug.Log("Full Trigger PRESSED");
-            }
-
-            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Menu))
-            {
-                Debug.Log("Menu PRESSED");
-            }
-
-            //Debug.Log(IsPointerActive());
-            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger))
-            {
-                Debug.Log("Trigger PRESSED");
-            }
-
-            if (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip))
-            {
-                Debug.Log("Grip PRESSED");
-            }
-
-
-            var deviceIndex = ViveRole.GetDeviceIndexEx(HandRole.RightHand);
-            var deviceState = VRModule.GetDeviceState(deviceIndex);
-            Debug.Log("velocity" + deviceState.velocity);
-            Debug.Log("angularVelocity = " + deviceState.angularVelocity);
-            Debug.Log("position = " + deviceState.position);
-            Debug.Log("rotation = " + deviceState.rotation);
-
-            var deviceIndexLeft = ViveRole.GetDeviceIndexEx(HandRole.LeftHand);
-            var deviceStateLeft = VRModule.GetDeviceState(deviceIndexLeft);
-            Debug.Log("Left velocity " + deviceStateLeft.velocity);
-            Debug.Log("Left angular velocity " + deviceStateLeft.angularVelocity);
-            Debug.Log("Left position = " + deviceStateLeft.position);
-            Debug.Log("Left rotation = " + deviceStateLeft.rotation);
-
 
             // SELECTION POINTER  
             SelectionPointerChecks();
@@ -381,7 +338,7 @@
             }
 
             // Releases the waypoint when the right index is released
-            if (currentControllerState == ControllerState.PLACING_WAYPOINT && OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger))
+            //if (currentControllerState == ControllerState.PLACING_WAYPOINT && OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger))
             if (currentControllerState == ControllerState.PLACING_WAYPOINT && (ViveInput.GetPressUp(HandRole.RightHand, ControllerButton.Trigger)))
             {
                 UserpointInstruction msg = new UserpointInstruction(currentWaypoint, "MODIFY");
@@ -411,7 +368,7 @@
             }
             // Initializing groundPoint when pointing and pressing index trigger
             //else if (currentControllerState == ControllerState.POINTING && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-            else if (currentControllerState == ControllerState.POINTING && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Menu)))
+            else if (currentControllerState == ControllerState.POINTING && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)))
             {
                 if (controller.GetComponent<VRTK_Pointer>().IsStateValid() &&
                     controller.GetComponent<VRTK_StraightPointerRenderer>().GetDestinationHit().point.y < WorldProperties.placementPlane.transform.position.y + 0.1)
