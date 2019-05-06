@@ -152,7 +152,7 @@
                 }
                 if (!currentCollisions.Any(x => (x.waypoint == collidedWaypoint && x.type == CollisionType.WAYPOINT)))
                 {
-                    //Debug.Log("A waypoint is entering the grab zone");
+                    Debug.Log("A waypoint is entering the grab zone");
 
                     // We automatically default to the most recent waypointCollision
                     mostRecentCollision = new CollisionPair(collidedWaypoint, CollisionType.WAYPOINT);
@@ -169,7 +169,7 @@
                 Waypoint lineOriginWaypoint = currentCollider.GetComponent<LineProperties>().originWaypoint;
                 if (!currentCollisions.Any(x => (x.waypoint == lineOriginWaypoint && x.type == CollisionType.LINE)))
                 {
-                    //Debug.Log("A line is entering the grab zone");
+                    Debug.Log("A line is entering the grab zone");
                     currentCollisions.Add(new CollisionPair(lineOriginWaypoint, CollisionType.LINE));
                 }
 
@@ -247,7 +247,7 @@
         private void ScalingChecks()
         {
             //if (OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger))
-            if ((ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Grip)) && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)))
+            if ( (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.FullTrigger)) && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.FullTrigger)) )
             {
                 currentControllerState = ControllerState.SCALING;
             }
@@ -275,10 +275,10 @@
 
             if ((currentControllerState == ControllerState.POINTING             // Checking for releasing grip
                 //&& OVRInput.GetUp(OVRInput.Button.SecondaryHandTrigger)) ||
-                && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)) ) ||
+                && (ViveInput.GetPressUp(HandRole.RightHand, ControllerButton.Trigger)) ) ||
                 (currentControllerState == ControllerState.POINTING             // Checking for scaling interaction
                 //&& OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger)))
-                && (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Grip))) )
+                && (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Trigger))) )
             {
                 toggleRaycastOff();
                 currentControllerState = ControllerState.IDLE; // Switch to the controller's idle state
@@ -317,7 +317,7 @@
             // Checks for right index Pressed and no waypoint in collision
             if (currentControllerState == ControllerState.IDLE &&
                 //OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger) &&
-                (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)) &&
+                (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)) &&
                 mostRecentCollision.type != CollisionType.WAYPOINT)
 
             {
@@ -339,7 +339,7 @@
 
             // Releases the waypoint when the right index is released
             //if (currentControllerState == ControllerState.PLACING_WAYPOINT && OVRInput.GetUp(OVRInput.Button.SecondaryIndexTrigger))
-            if (currentControllerState == ControllerState.PLACING_WAYPOINT && (ViveInput.GetPressUp(HandRole.RightHand, ControllerButton.Trigger)))
+            if (currentControllerState == ControllerState.PLACING_WAYPOINT && (ViveInput.GetPressUp(HandRole.RightHand, ControllerButton.Grip)))
             {
                 UserpointInstruction msg = new UserpointInstruction(currentWaypoint, "MODIFY");
                 WorldProperties.worldObject.GetComponent<ROSDroneConnection>().PublishWaypointUpdateMessage(msg);
@@ -354,7 +354,7 @@
         {
             // Ending the height adjustment
             //if (currentControllerState == ControllerState.SETTING_HEIGHT && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-            if (currentControllerState == ControllerState.SETTING_HEIGHT && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)))
+            if (currentControllerState == ControllerState.SETTING_HEIGHT && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)))
             {
                 toggleHeightPlaneOff();
                 currentControllerState = ControllerState.POINTING;
@@ -368,7 +368,7 @@
             }
             // Initializing groundPoint when pointing and pressing index trigger
             //else if (currentControllerState == ControllerState.POINTING && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-            else if (currentControllerState == ControllerState.POINTING && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)))
+            else if (currentControllerState == ControllerState.POINTING && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)))
             {
                 if (controller.GetComponent<VRTK_Pointer>().IsStateValid() &&
                     controller.GetComponent<VRTK_StraightPointerRenderer>().GetDestinationHit().point.y < WorldProperties.placementPlane.transform.position.y + 0.1)
