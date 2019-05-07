@@ -89,6 +89,23 @@
             pointer = controller.GetComponent<VRTK.VRTK_StraightPointerRenderer>();
         }
 
+        void Update()
+        {
+            var RightDeviceIndex = ViveRole.GetDeviceIndexEx(HandRole.RightHand);
+            var RightDeviceState = VRModule.GetDeviceState(RightDeviceIndex);
+            RightControllerPosition = RightDeviceState.position;
+            RightControllerVelocity = RightDeviceState.velocity;
+
+            var LeftDeviceIndex = ViveRole.GetDeviceIndexEx(HandRole.LeftHand);
+            var LeftDeviceState = VRModule.GetDeviceState(LeftDeviceIndex);
+            LeftControllerPosition = LeftDeviceState.position;
+            LeftControllerVelocity = LeftDeviceState.velocity;
+
+            //Debug.Log("Map State" + mapState);
+
+        }
+
+
         void FixedUpdate()
         {
 
@@ -251,7 +268,9 @@
             //Vector3 v = OVRInput.GetLocalControllerVelocity(OVRInput.Controller.LTouch) - OVRInput.GetLocalControllerVelocity(OVRInput.Controller.RTouch);
 
             Vector3 d = LeftControllerPosition - RightControllerPosition;
+            //Debug.Log(d);
             Vector3 v = LeftControllerVelocity - RightControllerVelocity;
+            //Debug.Log(v);
 
             //Calculating Scaling Vector
             float result = Vector3.Dot(v, d);

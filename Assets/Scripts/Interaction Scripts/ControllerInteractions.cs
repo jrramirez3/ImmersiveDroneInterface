@@ -107,6 +107,20 @@
         /// </summary>
         void Update()
         {
+        //    var deviceIndex = ViveRole.GetDeviceIndexEx(HandRole.RightHand);
+        //    var deviceState = VRModule.GetDeviceState(deviceIndex);
+        //    Debug.Log("velocity" + deviceState.velocity);
+        //    Debug.Log("angularVelocity = " + deviceState.angularVelocity);
+        //    Debug.Log("position = " + deviceState.position);
+        //    Debug.Log("rotation = " + deviceState.rotation);
+
+        //    var deviceIndexLeft = ViveRole.GetDeviceIndexEx(HandRole.LeftHand);
+        //    var deviceStateLeft = VRModule.GetDeviceState(deviceIndexLeft);
+        //    Debug.Log("Left velocity " + deviceStateLeft.velocity);
+        //    Debug.Log("Left angular velocity " + deviceStateLeft.angularVelocity);
+        //    Debug.Log("Left position = " + deviceStateLeft.position);
+        //    Debug.Log("Left rotation = " + deviceStateLeft.rotation);
+
 
             // SELECTION POINTER  
             SelectionPointerChecks();
