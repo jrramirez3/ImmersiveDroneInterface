@@ -26,6 +26,7 @@
         private List<CollisionPair> currentCollisions;
 
         public GameObject controller_right; // Our right controller
+        public GameObject controller_left; // Our left controller
         private GameObject controller; //needed to access pointer
 
         public GameObject grabZone;
@@ -57,6 +58,7 @@
 
             // Assigning the controller and setting the controller state
             controller_right = GameObject.Find("controller_right");
+            controller_left = GameObject.Find("controller_left");
             controller = GameObject.FindGameObjectWithTag("GameController");
             currentControllerState = ControllerState.IDLE;
 
@@ -214,6 +216,8 @@
         /// <summary>
         /// Handles the controller state switch to grabbing
         /// </summary>
+        /// 
+        //Edited this to use left controller instead.
         private void GrabbingChecks()
         {
             if (currentControllerState == ControllerState.IDLE &&
@@ -247,7 +251,7 @@
         private void ScalingChecks()
         {
             //if (OVRInput.Get(OVRInput.Button.PrimaryHandTrigger) && OVRInput.Get(OVRInput.Button.SecondaryHandTrigger))
-            if ( (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.FullTrigger)) && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.FullTrigger)) )
+            if ( (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Grip)) && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Grip)) )
             {
                 currentControllerState = ControllerState.SCALING;
             }

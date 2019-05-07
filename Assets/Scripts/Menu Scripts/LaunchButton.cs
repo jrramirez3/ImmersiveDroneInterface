@@ -18,6 +18,7 @@
         {
 
             controller = GameObject.FindGameObjectWithTag("GameController");
+            //controller = GameObject.Find("controller_left");
 
             myButton = GetComponent<Button>(); // <-- you get access to the button component here
 
