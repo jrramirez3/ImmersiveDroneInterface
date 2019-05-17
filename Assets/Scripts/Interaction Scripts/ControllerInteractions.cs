@@ -107,20 +107,25 @@
         /// </summary>
         void Update()
         {
-        //    var deviceIndex = ViveRole.GetDeviceIndexEx(HandRole.RightHand);
-        //    var deviceState = VRModule.GetDeviceState(deviceIndex);
-        //    Debug.Log("velocity" + deviceState.velocity);
-        //    Debug.Log("angularVelocity = " + deviceState.angularVelocity);
-        //    Debug.Log("position = " + deviceState.position);
-        //    Debug.Log("rotation = " + deviceState.rotation);
+            //    var deviceIndex = ViveRole.GetDeviceIndexEx(HandRole.RightHand);
+            //    var deviceState = VRModule.GetDeviceState(deviceIndex);
+            //    Debug.Log("velocity" + deviceState.velocity);
+            //    Debug.Log("angularVelocity = " + deviceState.angularVelocity);
+            //    Debug.Log("position = " + deviceState.position);
+            //    Debug.Log("rotation = " + deviceState.rotation);
 
-        //    var deviceIndexLeft = ViveRole.GetDeviceIndexEx(HandRole.LeftHand);
-        //    var deviceStateLeft = VRModule.GetDeviceState(deviceIndexLeft);
-        //    Debug.Log("Left velocity " + deviceStateLeft.velocity);
-        //    Debug.Log("Left angular velocity " + deviceStateLeft.angularVelocity);
-        //    Debug.Log("Left position = " + deviceStateLeft.position);
-        //    Debug.Log("Left rotation = " + deviceStateLeft.rotation);
-
+            //    var deviceIndexLeft = ViveRole.GetDeviceIndexEx(HandRole.LeftHand);
+            //    var deviceStateLeft = VRModule.GetDeviceState(deviceIndexLeft);
+            //    Debug.Log("Left velocity " + deviceStateLeft.velocity);
+            //    Debug.Log("Left angular velocity " + deviceStateLeft.angularVelocity);
+            //    Debug.Log("Left position = " + deviceStateLeft.position);
+            //    Debug.Log("Left rotation = " + deviceStateLeft.rotation);
+        
+            //if (controller.GetComponent<VRTK_Pointer>().IsPointerActive())
+            //{
+            //    Debug.Log("pointer is true");
+            //}
+            
 
             // SELECTION POINTER  
             SelectionPointerChecks();
@@ -235,16 +240,16 @@
         private void GrabbingChecks()
         {
             if (currentControllerState == ControllerState.IDLE &&
-                controller_right.GetComponent<VRTK_InteractGrab>().GetGrabbedObject() != null)
+                controller.GetComponent<VRTK_InteractGrab>().GetGrabbedObject() != null)
             {
                 // Updating to note that we are currently grabbing a waypoint
-                grabbedWaypoint = controller_right.GetComponent<VRTK_InteractGrab>().GetGrabbedObject().GetComponent<WaypointProperties>().classPointer;
+                grabbedWaypoint = controller.GetComponent<VRTK_InteractGrab>().GetGrabbedObject().GetComponent<WaypointProperties>().classPointer;
                 currentControllerState = ControllerState.GRABBING;
                 Debug.Log(grabbedWaypoint + "grabbing 0");
                 Debug.Log("Grabbing!");
             }
             else if (currentControllerState == ControllerState.GRABBING &&
-              controller_right.GetComponent<VRTK_InteractGrab>().GetGrabbedObject() == null)
+              controller.GetComponent<VRTK_InteractGrab>().GetGrabbedObject() == null)
             {
                 // Updating the line colliders
                 grabbedWaypoint.UpdateLineColliders();
@@ -286,6 +291,7 @@
                  && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger))
                 //&& !OVRInput.Get(OVRInput.Button.PrimaryHandTrigger))
                 && !(ViveInput.GetPress(HandRole.RightHand, ControllerButton.Trigger)))
+               
             {
                 toggleRaycastOn();
                 currentControllerState = ControllerState.POINTING; // Switch to the controller's pointing state
@@ -296,7 +302,7 @@
                 && (ViveInput.GetPressUp(HandRole.RightHand, ControllerButton.Trigger)) ) ||
                 (currentControllerState == ControllerState.POINTING             // Checking for scaling interaction
                 //&& OVRInput.GetDown(OVRInput.Button.PrimaryHandTrigger)))
-                && (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Trigger))) )
+                && (ViveInput.GetPressDown(HandRole.LeftHand, ControllerButton.Grip))) )
             {
                 toggleRaycastOff();
                 currentControllerState = ControllerState.IDLE; // Switch to the controller's idle state
@@ -336,8 +342,8 @@
             if (currentControllerState == ControllerState.IDLE &&
                 //OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger) &&
                 (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)) &&
-                mostRecentCollision.type != CollisionType.WAYPOINT)
-
+                mostRecentCollision.type != CollisionType.WAYPOINT &&
+                (!controller.GetComponent<VRTK_Pointer>().IsPointerActive()))
             {
                 currentWaypoint = CreateWaypoint(placePoint.transform.position);
 
@@ -372,7 +378,7 @@
         {
             // Ending the height adjustment
             //if (currentControllerState == ControllerState.SETTING_HEIGHT && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-            if (currentControllerState == ControllerState.SETTING_HEIGHT && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)))
+            if (currentControllerState == ControllerState.SETTING_HEIGHT && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Menu)))
             {
                 toggleHeightPlaneOff();
                 currentControllerState = ControllerState.POINTING;
@@ -386,7 +392,7 @@
             }
             // Initializing groundPoint when pointing and pressing index trigger
             //else if (currentControllerState == ControllerState.POINTING && OVRInput.GetDown(OVRInput.Button.SecondaryIndexTrigger))
-            else if (currentControllerState == ControllerState.POINTING && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Trigger)))
+            else if (currentControllerState == ControllerState.POINTING && (ViveInput.GetPressDown(HandRole.RightHand, ControllerButton.Menu)))
             {
                 if (controller.GetComponent<VRTK_Pointer>().IsStateValid() &&
                     controller.GetComponent<VRTK_StraightPointerRenderer>().GetDestinationHit().point.y < WorldProperties.placementPlane.transform.position.y + 0.1)
