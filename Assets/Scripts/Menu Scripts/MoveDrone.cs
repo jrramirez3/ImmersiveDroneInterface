@@ -32,6 +32,7 @@
 
         void Update()
         {
+            //print(gameObject.name);
             totalWaypoints = thisDrone.waypoints.Count - 1;
 
             if (prevPoint != null)
@@ -75,10 +76,14 @@
                 if (totalWaypoints > currentWaypoint)
                 {
                     targetWaypoint = ((Waypoint) thisDrone.waypoints[currentWaypoint + 1]).gameObjectPointer;
-                    if (this.transform.position == targetWaypoint.transform.position)
+                    //Debug.Log("Current: " + currentWaypoint);
+                    //Debug.Log("Total Points: " + totalWaypoints);
+                    //Debug.Log("Next: " + targetWaypoint);
+                    if (transform.position == targetWaypoint.transform.position)
                     {
-                        prevPoint = (GameObject)thisDrone.waypoints[currentWaypoint + 1];
                         currentWaypoint++;
+                        prevPoint = (GameObject)thisDrone.waypoints[currentWaypoint];
+                        Debug.Log("Current: " + currentWaypoint);
                     }
                 }
                 else if (totalWaypoints < currentWaypoint)

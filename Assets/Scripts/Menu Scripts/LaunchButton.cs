@@ -13,10 +13,12 @@
         Button myButton;
         bool flying;
         private GameObject controller; //needed to access pointer
+        GameObject drone_obj;
 
         void Awake()
         {
 
+            
             controller = GameObject.FindGameObjectWithTag("GameController");
             //controller = GameObject.Find("controller_left");
 
@@ -29,21 +31,27 @@
 
         private void Update()
         {
+            //print(gameObject.name);
             if (flying)
             {
                 WorldProperties.runtime += Time.deltaTime;
                 
             }
+
         }
 
         void OnClickEvent()
         {
+            
             if (controller.GetComponent<VRTK_Pointer>().IsPointerActive())
             {
+                
                 if (WorldProperties.selectedDrone != null && !flying)
                 {
                     WorldProperties.worldObject.GetComponent<ROSDroneConnection>().SendServiceCall("/takeoff", "");
-                    GetComponentInChildren<Text>().text = "Land";
+                    WorldProperties.worldObject.GetComponent<MoveDrone>().move = true;
+                    Debug.Log("Moving Drone");
+
                     flying = true;
                     Debug.Log("Total planning time was: " + WorldProperties.planningTime + "s");
 
@@ -57,6 +65,8 @@
                     Debug.Log("Total flight time was: " + WorldProperties.runtime + "s");
 
                 }
+                
+               
             }        
         }
 
