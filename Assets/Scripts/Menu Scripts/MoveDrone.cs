@@ -23,6 +23,7 @@
 
         void Start()
         {
+            
             thisDrone = gameObject.GetComponent<DroneProperties>().classPointer;
             currentWaypoint = 0;
             move = false;
@@ -32,6 +33,7 @@
 
         void Update()
         {
+            move = WorldProperties.worldObject.GetComponent<MapInteractions>().moving;
             //print(gameObject.name);
             totalWaypoints = thisDrone.waypoints.Count - 1;
 

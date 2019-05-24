@@ -62,6 +62,8 @@
         private Vector3 RightControllerVelocity;
         private Vector3 LeftControllerVelocity;
 
+        public bool moving;
+
         // Use this for initialization
         void Start()
         {

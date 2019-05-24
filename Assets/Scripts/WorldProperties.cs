@@ -44,6 +44,7 @@
         public static HashSet<int> obstacleids; //used in ObstacleSubscriber
         public static List<string> obstacleDistsToPrint;
 
+
         // Use this for initialization
         void Start()
         {
@@ -78,6 +79,7 @@
        
         private void Update()
         {
+            //print(gameObject.name);
             planningTime += Time.deltaTime;
         }
 
@@ -114,7 +116,7 @@
         {
             if (!GameObject.FindWithTag("Drone"))
             {
-                Drone newDrone = new Drone(worldObject.transform.position + new Vector3(-2, 0.1f, 0));
+                Drone newDrone = new Drone(worldObject.transform.position + new Vector3(-0.20f, 0.099f, -0.29f));
                 //Drone newDrone = new Drone(worldObject.transform.position + new Vector3(5, 0.1f, 0));
                 selectedDrone = newDrone;
             }

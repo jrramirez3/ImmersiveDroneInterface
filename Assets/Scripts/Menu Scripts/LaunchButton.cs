@@ -14,6 +14,7 @@
         bool flying;
         private GameObject controller; //needed to access pointer
         GameObject drone_obj;
+       
 
         void Awake()
         {
@@ -49,7 +50,8 @@
                 if (WorldProperties.selectedDrone != null && !flying)
                 {
                     WorldProperties.worldObject.GetComponent<ROSDroneConnection>().SendServiceCall("/takeoff", "");
-                    WorldProperties.worldObject.GetComponent<MoveDrone>().move = true;
+                    WorldProperties.worldObject.GetComponent<MapInteractions>().moving=true;
+
                     Debug.Log("Moving Drone");
 
                     flying = true;
