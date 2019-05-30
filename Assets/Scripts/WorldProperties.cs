@@ -116,8 +116,9 @@
         {
             if (!GameObject.FindWithTag("Drone"))
             {
-                Drone newDrone = new Drone(worldObject.transform.position + new Vector3(-0.20f, 0.099f, -0.29f));
-                //Drone newDrone = new Drone(worldObject.transform.position + new Vector3(5, 0.1f, 0));
+                //Drone newDrone = new Drone(worldObject.transform.position + new Vector3(-0.20f, 0.099f, -0.29f));
+                Drone newDrone = new Drone(worldObject.transform.position + new Vector3(0, 0.1f, 0));
+                //newDrone = Drone(worldObject.transform.localScale + new Vector3(2, 2, 2));
                 selectedDrone = newDrone;
             }
         }
